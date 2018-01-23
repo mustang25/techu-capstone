@@ -62,6 +62,8 @@ while True:
 
     # Take readings from all three sensors
     sensorTemp = sense.get_temperature()
+    sensor_pressure = round(sense.get_pressure(), 1)
+    sensor_humidity = round(sense.get_humidity(), 0)
 
     # Calibrated Sensor Temp via Github
     temp_calibrated = sensorTemp - ((cpuTemp - sensorTemp)/5.466)
@@ -76,16 +78,16 @@ while True:
       
     # Create the message
     # str() converts the value to a string so it can be concatenated
-    message = temp_calibrated
     JSONPayload = {
         "state": {
             "reported": {
-                "temperature": message
+                "temperature": temp_calibrated,
+                "humidity": sensor_humidity,
+                "pressure": sensor_pressure
             }
         }
     }
     
-    print(JSONPayload)
     myDeviceShadow.shadowUpdate(json.dumps(JSONPayload), customShadowCallback_Update, 5)
     
-    sleep(20)
+    sleep(60)
