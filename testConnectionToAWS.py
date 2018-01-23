@@ -1,8 +1,8 @@
 import os
-import time
 from sense_hat import SenseHat
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
-from time import sleep
+from time import sleep, time
+from datetime import datetime
 import json
 
 # Return CPU temperature as a character string                                      
@@ -55,15 +55,23 @@ myDeviceShadow = myShadowClient.createShadowHandlerWithName("weather_lga_6-102",
 myMQTTClient = myShadowClient.getMQTTConnection()
 
 while True:
+    current_seconds = int(datetime.fromtimestamp(time()).strftime('%S'))
+    if current_seconds != 0:
+        sleep(60-current_seconds)
     
+    # Get current date/time
+    time_stamp = time()
+    current_date = datetime.fromtimestamp(time_stamp).strftime('%Y-%m-%d')
+    current_time = datetime.fromtimestamp(time_stamp).strftime('%H:%M:%S')
+
     # Get CPU temperature and convert to float
     cpuTemp = getCPUtemperature()
     cpuTemp = float(cpuTemp)
 
     # Take readings from all three sensors
     sensorTemp = sense.get_temperature()
-    sensor_pressure = round(sense.get_pressure(), 1)
-    sensor_humidity = round(sense.get_humidity(), 0)
+    sensor_pressure = round(sense.get_pressure(), 0)
+    sensor_humidity = round(sense.get_humidity(), 1)
 
     # Calibrated Sensor Temp via Github
     temp_calibrated = sensorTemp - ((cpuTemp - sensorTemp)/5.466)
@@ -81,6 +89,8 @@ while True:
     JSONPayload = {
         "state": {
             "reported": {
+                "date": current_date,
+                "time": current_time,
                 "temperature": temp_calibrated,
                 "humidity": sensor_humidity,
                 "pressure": sensor_pressure
@@ -90,4 +100,3 @@ while True:
     
     myDeviceShadow.shadowUpdate(json.dumps(JSONPayload), customShadowCallback_Update, 5)
     
-    sleep(60)
