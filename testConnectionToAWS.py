@@ -79,8 +79,8 @@ while True:
     message = temp_calibrated
     JSONPayload = {
         "state": {
-            "desired": {
-                "Temperature": message
+            "reported": {
+                "temperature": message
             }
         }
     }
