@@ -18,6 +18,7 @@ while True:
     # Get CPU temperature & convert to Float
     cpuTemp = getCPUtemperature()
     cpuTemp = float(cpuTemp)
+    
 
     # Get sensor temperature 
     sensorTemp = sense.get_temperature()
