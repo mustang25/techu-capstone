@@ -97,3 +97,4 @@ while True:
     
     myDeviceShadow.shadowUpdate(json.dumps(JSONPayload), customShadowCallback_Update, 5)
    sleep(10)
+    
